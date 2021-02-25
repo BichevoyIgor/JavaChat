@@ -5,7 +5,7 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller" >
     <stylesheets>
         <URL value="@/css/style.css"/>
     </stylesheets>
@@ -24,10 +24,18 @@
 
     <center>
         <GridPane vgap="5">
-            <TextArea fx:id="textArea1" editable="false" focusTraversable="false" GridPane.columnIndex="0"
-                      GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
 
-            <GridPane hgap="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <HBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="5" fx:id="authPanel" visible="true" managed="true">
+                    <TextField fx:id="loginField" promptText="login" onAction="#tryAuth"/>
+                    <PasswordField fx:id="passwordField" promptText="password" onAction="#tryAuth"/>
+                    <Button fx:id="authButton" text="auth" onAction="#tryAuth" />
+            </HBox>
+
+
+            <TextArea fx:id="textArea1" editable="false" focusTraversable="false" GridPane.columnIndex="0"
+                      GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+
+            <GridPane fx:id="messagePanel" hgap="5" GridPane.columnIndex="0" GridPane.rowIndex="2" visible="false" managed="false">
                 <TextField fx:id="textField1" onKeyReleased="#sendTextFromTextField" GridPane.columnIndex="0"
                            GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
                 <Button fx:id="sendButton" onAction="#send" text="Send" GridPane.columnIndex="1" GridPane.rowIndex="0">
