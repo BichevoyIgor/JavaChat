@@ -23,7 +23,7 @@ public class SimpleAuthService implements AuthService {
         users = new ArrayList<>();
         users.add(new UserData("igoreek", "123", "igoreek"));
         for (int i = 1; i <= 10; i++) {
-            users.add(new UserData("login_" + i, "123", "user_" + i));
+            users.add(new UserData("u" + i, "123", "u" + i));
         }
     }
     

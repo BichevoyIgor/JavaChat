@@ -45,6 +45,20 @@ public class Server {
         }
     }
 
+    public void privareMSG(ClientHandler sender, String reciever, String msg){
+        String message = String.format("%s to %s: %s", sender.getNickname(), reciever, msg);
+        for (ClientHandler c: clientHandlerList){
+            if (c.getNickname().equals(reciever)) {
+                c.sendMessage(message);
+                if (!c.equals(sender)){
+                    sender.sendMessage(message);
+                }
+                return;
+            }
+        }
+        sender.sendMessage("Получатель " + reciever + " не найден");
+    }
+
     public void subscribe(ClientHandler clientHandler){
         clientHandlerList.add(clientHandler);
     }

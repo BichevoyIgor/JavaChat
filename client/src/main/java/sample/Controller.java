@@ -1,5 +1,6 @@
 package sample;
 
+import commands.Command;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -80,12 +81,12 @@ public class Controller implements Initializable {
                 try {
                     while (true) {
                         String str = in.readUTF();
-                        if (str.equals("/exit")) {
+                        if (str.equals(Command.END)) {
                             System.out.println("Клиент отключен");
-                            out.writeUTF("/exit");
+                            out.writeUTF(Command.END);
                             break;
                         }
-                        if (str.startsWith("/authok")) {
+                        if (str.startsWith(Command.AUTH_OK)) {
                             String[] token = str.split("\\s");
                             nickname = token[1];
                             setAuthentification(true);
@@ -146,7 +147,7 @@ public class Controller implements Initializable {
             stage.close();
             if (socket != null){
             try {
-                out.writeUTF("/exit");
+                out.writeUTF(Command.END);
             } catch (IOException e) {
                 e.printStackTrace();
             }}
@@ -156,7 +157,7 @@ public class Controller implements Initializable {
     public void tryAuth(ActionEvent actionEvent) {
         if (socket == null || socket.isClosed()) connect();
         try {
-            out.writeUTF(String.format("/auth %s %s", loginField.getText().trim(), passwordField.getText().trim()));
+            out.writeUTF(String.format("%s %s %s", Command.AUTH, loginField.getText().trim(), passwordField.getText().trim()));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

@@ -1,5 +1,7 @@
 package server;
 
+import commands.Command;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,19 +25,19 @@ public class ClientHandler {
                 try {
                     while (true) {
                         String str = in.readUTF();
-                        if (str.equals("/exit")) {
+                        if (str.equals(Command.END)) {
                             System.out.println("Клиент отключен " + socket.getRemoteSocketAddress());
-                            out.writeUTF("/exit");
+                            out.writeUTF(Command.END);
                             break;
                         }
-                        if (str.startsWith("/auth")) {
+                        if (str.startsWith(Command.AUTH)) {
                             String[] token = str.split("\\s");
                             if (token.length < 3) continue;
                             String newNick = server.getAuthService().getNicknameAndPassword(token[1], token[2]);
 
                             if (newNick != null) {
                                 nickname = newNick;
-                                sendMessage("/authok " + nickname);
+                                sendMessage(Command.AUTH_OK + " " + nickname);
                                 server.subscribe(this);
                                 break;
                             } else {
@@ -46,12 +48,22 @@ public class ClientHandler {
                     }
                     while (true) {
                         String str = in.readUTF();
-                        if (str.equals("/exit")) {
-                            System.out.println("Клиент отключен " + socket.getRemoteSocketAddress());
-                            out.writeUTF("/exit");
-                            break;
+                        if (str.startsWith("/")) {
+                            if (str.equals(Command.END)) {
+                                System.out.println("Клиент отключен " + socket.getRemoteSocketAddress());
+                                out.writeUTF(Command.END);
+                                break;
+                            }
+                            if (str.startsWith(Command.PRIVATE_MSG)) {
+                                String[] token = str.split("\\s");
+                                if (token.length < 3) {
+                                    continue;
+                                }
+                                server.privareMSG(this, token[1], token[2]);
+                            }
+                        } else {
+                            server.broadcastMSG(this, str);
                         }
-                        server.broadcastMSG(this, str);
                     }
 
                 } catch (IOException e) {
