@@ -51,14 +51,14 @@
 }
 
 
-#textField1, #loginField, #passwordField {
+#textField1, #loginField, #passwordField, #nicknamefield {
     -fx-border-color: black;
     -fx-border-radius: 9;
     -fx-background-color: #d3e5bf;
     -fx-background-radius: 9;
 }
 
-.text-area .content {
+.text-area .content{
     -fx-background-color: #d3e5bf;
     -fx-background-radius: 9;
 }
@@ -88,6 +88,47 @@
     -fx-background-color: #d3e5bf;
     -fx-background-radius: 9;
 }
+
+
+
+
+
+
+
+
+
+
+.list-view .content{
+    -fx-background-color: #d3e5bf;
+    -fx-background-radius: 9;
+}
+
+.list-view .scroll-bar:vertical {
+    -fx-background-color: #d3e5bf;
+}
+
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #5d8831;
+}
+
+.list-view {
+    -fx-background-color: #d3e5bf;
+    -fx-background-radius: 9;
+    -fx-border-color: black;
+    -fx-border-radius: 9;
+    -fx-font-style: italic;
+}
+
+.list-view .scroll-pane {
+    -fx-background-color: #d3e5bf;
+    -fx-background-radius: 9;
+}
+
+.list-view .scroll-pane .viewport {
+    -fx-background-color: #d3e5bf;
+    -fx-background-radius: 9;
+}
+
 
 
 

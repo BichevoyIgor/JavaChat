@@ -13,6 +13,7 @@ public class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private String nickname;
+    private String login;
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -23,29 +24,51 @@ public class ClientHandler {
 
             new Thread(() -> {
                 try {
+                    //цикл аутентификации
                     while (true) {
                         String str = in.readUTF();
+                        //отключение
                         if (str.equals(Command.END)) {
-                            System.out.println("Клиент отключен " + socket.getRemoteSocketAddress());
                             out.writeUTF(Command.END);
                             break;
                         }
+                        //аутентификация
                         if (str.startsWith(Command.AUTH)) {
                             String[] token = str.split("\\s");
-                            if (token.length < 3) continue;
+                            if (token.length < 3) {
+                                continue;
+                            }
                             String newNick = server.getAuthService().getNicknameAndPassword(token[1], token[2]);
-
+                            login = token[1];
                             if (newNick != null) {
-                                nickname = newNick;
-                                sendMessage(Command.AUTH_OK + " " + nickname);
-                                server.subscribe(this);
-                                break;
+                                if (!server.isLoginAutentification(login)){
+                                    nickname = newNick;
+                                    sendMessage(Command.AUTH_OK + " " + nickname);
+                                    server.subscribe(this);
+                                    System.out.println("client connected with nick: " + nickname + " from " + socket.getRemoteSocketAddress());
+                                    break;
+                                }else {
+                                    sendMessage("Логин занят");
+                                }
+
                             } else {
                                 sendMessage("Не верный логиин или пароль");
                                 continue;
                             }
                         }
+                        //регистрация
+                        if (str.startsWith(Command.REG)){
+                            String[] token = str.split("\\s", 4);
+                            if (token.length < 4) {
+                                continue;
+                            }
+                            boolean regSuccess = server.getAuthService().registration(token[1], token[2], token[3]);
+                            if (regSuccess){
+                                sendMessage(Command.REG_OK);
+                            }else sendMessage(Command.REG_NO);
+                        }
                     }
+                    //цикл работы
                     while (true) {
                         String str = in.readUTF();
                         if (str.startsWith("/")) {
@@ -55,11 +78,11 @@ public class ClientHandler {
                                 break;
                             }
                             if (str.startsWith(Command.PRIVATE_MSG)) {
-                                String[] token = str.split("\\s");
+                                String[] token = str.split("\\s", 3);
                                 if (token.length < 3) {
                                     continue;
                                 }
-                                server.privareMSG(this, token[1], token[2]);
+                                server.privateMSG(this, token[1], token[2]);
                             }
                         } else {
                             server.broadcastMSG(this, str);
@@ -69,7 +92,7 @@ public class ClientHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    server.unsubscribe(this);
+                    server.unsubscribe(this, socket);
                     try {
                         in.close();
                         socket.close();
@@ -93,5 +116,9 @@ public class ClientHandler {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public String getLogin() {
+        return login;
     }
 }
